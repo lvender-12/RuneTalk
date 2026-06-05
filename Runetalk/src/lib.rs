@@ -1,0 +1,10 @@
+// Global Modules
+pub mod app;
+pub mod common;
+pub mod config;
+pub mod entity;
+pub mod errors;
+pub mod middleware;
+pub mod model;
+pub mod routes;
+pub mod utils;

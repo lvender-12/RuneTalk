@@ -1,0 +1,15 @@
+DROP INDEX IF EXISTS idx_echoes_rift_id;
+DROP INDEX IF EXISTS idx_echoes_adventurer_id;
+DROP INDEX IF EXISTS idx_echoes_created_at;
+DROP INDEX IF EXISTS idx_guild_members_adventurer_id;
+DROP INDEX IF EXISTS idx_guild_members_guild_id;
+DROP INDEX IF EXISTS idx_whispers_scroll_id;
+DROP INDEX IF EXISTS idx_whispers_sender_id;
+DROP INDEX IF EXISTS idx_whispers_created_at;
+DROP INDEX IF EXISTS idx_scrolls_initiator_id;
+DROP INDEX IF EXISTS idx_scrolls_recipient_id;
+DROP INDEX IF EXISTS idx_rifts_guild_id;
+DROP INDEX IF EXISTS idx_allies_from_id;
+DROP INDEX IF EXISTS idx_allies_to_id;
+DROP INDEX IF EXISTS idx_pledges_from_id;
+DROP INDEX IF EXISTS idx_pledges_to_id;

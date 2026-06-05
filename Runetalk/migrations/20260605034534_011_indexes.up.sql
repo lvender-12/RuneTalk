@@ -1,0 +1,15 @@
+CREATE INDEX idx_echoes_rift_id ON echoes(rift_id);
+CREATE INDEX idx_echoes_adventurer_id ON echoes(adventurer_id);
+CREATE INDEX idx_echoes_created_at ON echoes(created_at);
+CREATE INDEX idx_guild_members_adventurer_id ON guild_members(adventurer_id);
+CREATE INDEX idx_guild_members_guild_id ON guild_members(guild_id);
+CREATE INDEX idx_whispers_scroll_id ON whispers(scroll_id);
+CREATE INDEX idx_whispers_sender_id ON whispers(sender_id);
+CREATE INDEX idx_whispers_created_at ON whispers(created_at);
+CREATE INDEX idx_scrolls_initiator_id ON scrolls(initiator_id);
+CREATE INDEX idx_scrolls_recipient_id ON scrolls(recipient_id);
+CREATE INDEX idx_rifts_guild_id ON rifts(guild_id);
+CREATE INDEX idx_allies_from_id ON allies(from_id);
+CREATE INDEX idx_allies_to_id ON allies(to_id);
+CREATE INDEX idx_pledges_from_id ON pledges(from_id);
+CREATE INDEX idx_pledges_to_id ON pledges(to_id);

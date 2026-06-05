@@ -1,0 +1,2 @@
+DROP INDEX IF EXISTS idx_allies_pair;
+DROP TABLE IF EXISTS allies;

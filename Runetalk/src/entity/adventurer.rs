@@ -9,7 +9,7 @@ pub struct Adventurer {
     pub username: String,
     pub display_name: Option<String>,
     pub email: String,
-    pub password_hash: String,
+    pub password: String,
     pub avatar_url: Option<String>,
     pub banner_url: Option<String>,
     pub bio: Option<String>,

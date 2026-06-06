@@ -1,24 +1,36 @@
-use std::sync::Arc;
-
-use axum::{Router, routing::get};
+use axum::Router;
 use http::HeaderValue;
 use redis::aio::MultiplexedConnection;
-use tokio::sync::Mutex;
+use std::fmt;
+use std::sync::Arc;
 use tower_http::cors::{AllowOrigin, CorsLayer};
 
-use crate::model::config_model::ConfigModel;
+use crate::{
+    model::config_model::ConfigModel,
+    modules::{auth::service::AuthService, user::service::UserService},
+    routes::auth_route::auth_routes,
+};
 
-pub async fn test_handler() -> &'static str {
-    "Hello, World!"
-}
-
-#[derive(Clone, Debug)]
+#[derive(Clone)]
 pub struct AppState {
     pub db: Arc<sqlx::PgPool>,
-    pub redis: Arc<Mutex<MultiplexedConnection>>,
+    pub redis: Arc<MultiplexedConnection>,
     pub config: Arc<ConfigModel>,
+    pub auth_service: Arc<dyn AuthService>,
+    pub user_service: Arc<dyn UserService>,
 }
 
+impl fmt::Debug for AppState {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.debug_struct("AppState")
+            .field("db", &self.db)
+            .field("redis", &"RedisConnection")
+            .field("config", &self.config)
+            .field("auth_service", &"Arc<dyn AuthService>")
+            .field("user_service", &"Arc<dyn UserService>")
+            .finish()
+    }
+}
 pub fn create_app(state: AppState) -> Router {
     let allowed_origin_vec: Vec<String> = state.config.allowed_origins.clone();
 
@@ -48,7 +60,7 @@ pub fn create_app(state: AppState) -> Router {
         .allow_credentials(true);
 
     Router::new()
-        .route("/", get(test_handler))
+        .merge(auth_routes(state.clone()))
         .with_state(state)
         .layer(cors)
 }

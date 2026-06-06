@@ -5,7 +5,7 @@ CREATE TABLE adventurers (
     username VARCHAR(50) UNIQUE NOT NULL,
     display_name VARCHAR(100),
     email VARCHAR(100) UNIQUE NOT NULL,
-    password_hash TEXT NOT NULL,
+    password TEXT NOT NULL,
     avatar_url TEXT,
     banner_url TEXT,
     bio TEXT,

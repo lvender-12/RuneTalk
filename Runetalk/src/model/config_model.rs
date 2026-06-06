@@ -7,6 +7,7 @@ pub struct ConfigModel {
     pub redis: RedisConfig,
     pub jwt: JwtConfig,
     pub api: ApiConfig,
+    pub smtp: Smtp,
     pub allowed_origins: Vec<String>,
 }
 
@@ -44,4 +45,10 @@ pub struct JwtConfig {
 #[derive(Debug, Deserialize, Clone)]
 pub struct ApiConfig {
     pub secret: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct Smtp {
+    pub email: String,
+    pub password: String,
 }

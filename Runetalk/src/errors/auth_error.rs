@@ -17,4 +17,10 @@ pub enum AuthError {
 
     #[error("account already exists")]
     AccountExists,
+
+    #[error("email already registered")]
+    EmailAlreadyExists,
+
+    #[error("username already taken")]
+    UsernameAlreadyExists,
 }

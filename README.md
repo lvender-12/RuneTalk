@@ -2,6 +2,10 @@
 
 A fantasy-themed real-time chat platform — think Discord, but in a world of guilds, adventurers, and ancient runes.
 
+## 🖼️ UI Preview
+
+![RuneTalk UI](./docs/screenshots/runetalk-ui.png)
+
 ## ✨ Features
 
 - **Authentication** — Register & login with JWT, OTP verification via email (SMTP)
@@ -11,6 +15,7 @@ A fantasy-themed real-time chat platform — think Discord, but in a world of gu
 - **Scrolls & Whispers** — Private DM conversations between adventurers
 - **Presence** — Online/offline/idle/dnd status with custom status
 - **Real-time** — WebSocket for live messaging, SSE for event streaming
+- **Frontend UI** — React + Tailwind mock-data interface for auth, guild chat, DMs, allies, modals, replies, pinned echoes, and presence states
 
 ## 🛠️ Tech Stack
 
@@ -18,6 +23,7 @@ A fantasy-themed real-time chat platform — think Discord, but in a world of gu
 |---|---|
 | Language | Rust |
 | Web Framework | Axum 0.8 |
+| Frontend | React 18 + Vite + Tailwind CSS |
 | Database | PostgreSQL 16 |
 | Cache / Session | Redis |
 | ORM / Migrations | SQLx 0.9 |
@@ -76,6 +82,16 @@ sqlx migrate run
 # Run the server
 cargo run
 ```
+
+### Frontend UI
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+The frontend currently uses schema-shaped mock data in `frontend/src/app/data/mock.ts`, so it can run before the backend API is fully wired.
 
 ### Docker (Database)
 

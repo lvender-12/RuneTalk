@@ -4,7 +4,7 @@ A fantasy-themed real-time chat platform — think Discord, but in a world of gu
 
 ## 🖼️ UI Preview
 
-![RuneTalk UI](./docs/screenshots/runetalk-ui.png)
+![RuneTalk UI](./docs/screenshots/runetalk-fe.png)
 
 ## ✨ Features
 

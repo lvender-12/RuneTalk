@@ -6,5 +6,6 @@ pub mod entity;
 pub mod errors;
 pub mod middleware;
 pub mod model;
+pub mod modules;
 pub mod routes;
 pub mod utils;

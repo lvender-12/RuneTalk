@@ -43,6 +43,9 @@ pub enum AuthError {
 
     #[error("refresh token expired or invalid")]
     InvalidRefreshToken,
+
+    #[error("invalid api secret key")]
+    InvalidApiKey,
 }
 
 impl AuthError {
@@ -52,7 +55,8 @@ impl AuthError {
             | Self::Unauthorized
             | Self::InvalidPassword
             | Self::InvalidToken
-            | Self::InvalidRefreshToken => StatusCode::UNAUTHORIZED,
+            | Self::InvalidRefreshToken
+            | Self::InvalidApiKey => StatusCode::UNAUTHORIZED,
 
             Self::Forbidden | Self::NotVerified(_) | Self::EmailNotVerified(_) => {
                 StatusCode::FORBIDDEN

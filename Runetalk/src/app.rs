@@ -1,4 +1,4 @@
-use axum::Router;
+use axum::{Router, middleware::from_fn_with_state};
 use http::HeaderValue;
 use redis::aio::MultiplexedConnection;
 use std::fmt;
@@ -6,6 +6,10 @@ use std::sync::Arc;
 use tower_http::cors::{AllowOrigin, CorsLayer};
 
 use crate::{
+    middleware::{
+        api_keys::api_keys_middleware, method_not_allowed::method_not_allowed,
+        not_found::not_found_middleware,
+    },
     model::config_model::ConfigModel,
     modules::{auth::service::AuthService, user::service::UserService},
     routes::auth_route::auth_routes,
@@ -62,6 +66,9 @@ pub fn create_app(state: AppState) -> Router {
 
     Router::new()
         .merge(auth_routes(state.clone()))
+        .layer(from_fn_with_state(state.clone(), api_keys_middleware))
+        .method_not_allowed_fallback(method_not_allowed)
+        .fallback(not_found_middleware)
         .with_state(state)
         .layer(cors)
 }

@@ -18,5 +18,8 @@ jwt:
   expiry: 86400
 api:
   secret: "YOUR_API_SECRET_KEY"
+smtp:
+  email: email
+  password: password app
 allowed_origins:
   - "http://localhost:3000"

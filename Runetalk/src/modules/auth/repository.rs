@@ -1,8 +1,5 @@
 use crate::{
-    app::AppState,
-    entity::Adventurer,
-    errors::AppResult,
-    modules::auth::dto::{LoginDto, RegisterDto},
+    app::AppState, entity::Adventurer, errors::AppResult, modules::auth::dto::RegisterDto,
 };
 use async_trait::async_trait;
 use mockall::automock;
@@ -17,7 +14,7 @@ pub trait AuthRepository: Send + Sync {
     async fn save_adventurer(&self, user: RegisterDto) -> AppResult<()>;
     async fn otp_redis(&self, email: &str, otp: String) -> AppResult<()>;
     async fn verify_otp(&self, email: &str, otp: &str) -> AppResult<bool>;
-    async fn login(&self, user: LoginDto) -> AppResult<()>;
+    async fn login(&self, identifier: &str) -> AppResult<Option<Adventurer>>;
 }
 
 pub struct AuthRepositoryImpl {
@@ -91,7 +88,12 @@ impl AuthRepository for AuthRepositoryImpl {
         Ok(is_valid)
     }
 
-    async fn login(&self, _user: LoginDto) -> AppResult<()> {
-        todo!()
+    async fn login(&self, identifier: &str) -> AppResult<Option<Adventurer>> {
+        Ok(sqlx::query_as::<_, Adventurer>(
+            "select * from adventurers where username = $1 or email = $1",
+        )
+        .bind(identifier)
+        .fetch_optional(self.state.db.as_ref())
+        .await?)
     }
 }

@@ -31,6 +31,7 @@ impl fmt::Debug for AppState {
             .finish()
     }
 }
+
 pub fn create_app(state: AppState) -> Router {
     let allowed_origin_vec: Vec<String> = state.config.allowed_origins.clone();
 

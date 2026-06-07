@@ -4,6 +4,11 @@ use super::{
     serde_error::SerdeError, task_error::TaskError, time_error::TimeError, uuid_error::UuidError,
     validation_error::ValidationError,
 };
+use axum::{
+    Json,
+    response::{IntoResponse, Response},
+};
+use http::StatusCode;
 use jsonwebtoken::errors::ErrorKind as JwtErrorKind;
 
 pub type AppResult<T> = Result<T, AppError>;
@@ -56,6 +61,48 @@ pub enum AppError {
 impl AppError {
     pub fn internal(err: impl Into<anyhow::Error>) -> Self {
         Self::Internal(err.into())
+    }
+
+    pub fn status_code(&self) -> StatusCode {
+        match self {
+            AppError::Auth(err) => err.status_code(),
+            AppError::Jwt(err) => err.status_code(), // UBAH LINE INI
+            AppError::Validation(_) => StatusCode::BAD_REQUEST,
+            AppError::Db(_)
+            | AppError::Redis(_)
+            | AppError::Config(_)
+            | AppError::Email(_)
+            | AppError::Hash(_)
+            | AppError::Http(_)
+            | AppError::Serde(_)
+            | AppError::Task(_)
+            | AppError::Time(_)
+            | AppError::Uuid(_)
+            | AppError::Internal(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        }
+    }
+
+    pub fn to_data(&self) -> serde_json::Value {
+        match self {
+            AppError::Auth(err) => err.to_data(),
+            _ => serde_json::Value::Null,
+        }
+    }
+}
+
+impl IntoResponse for AppError {
+    fn into_response(self) -> Response {
+        let status = self.status_code();
+        let message = self.to_string();
+        let data = self.to_data();
+
+        let body = if !data.is_null() {
+            crate::common::response::ApiResponse::error_with_data(&message, data)
+        } else {
+            crate::common::response::ApiResponse::error(&message)
+        };
+
+        (status, Json(body)).into_response()
     }
 }
 

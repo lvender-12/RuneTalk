@@ -36,3 +36,9 @@ pub struct ResendOtpDto {
     #[validate(email(message = "Format email tidak valid"))]
     pub email: String,
 }
+
+#[derive(Debug, Deserialize, Validate)]
+pub struct RefreshTokenDto {
+    #[validate(length(min = 1))]
+    pub refresh_token: String,
+}

@@ -12,7 +12,7 @@ use crate::{
     },
     model::config_model::ConfigModel,
     modules::{auth::service::AuthService, user::service::UserService},
-    routes::auth_route::auth_routes,
+    routes::{auth_route::auth_routes, protected::protected_routes},
 };
 
 #[derive(Clone)]
@@ -66,6 +66,7 @@ pub fn create_app(state: AppState) -> Router {
 
     Router::new()
         .merge(auth_routes(state.clone()))
+        .merge(protected_routes(state.clone()))
         .layer(from_fn_with_state(state.clone(), api_keys_middleware))
         .method_not_allowed_fallback(method_not_allowed)
         .fallback(not_found_middleware)

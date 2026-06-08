@@ -17,3 +17,27 @@ pub fn verif_password(password: &str, password_hash: &str) -> AppResult<bool> {
         .verify_password(password.as_bytes(), &hash)
         .is_ok())
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_hash_and_verify_password() {
+        let password = "my_secret_password";
+        let hashed = hash_password(password).unwrap();
+        assert_ne!(password, hashed);
+
+        let is_valid = verif_password(password, &hashed).unwrap();
+        assert!(is_valid);
+
+        let is_invalid = verif_password("wrong_password", &hashed).unwrap();
+        assert!(!is_invalid);
+    }
+
+    #[test]
+    fn test_verify_invalid_hash_format() {
+        let res = verif_password("password", "invalid-hash");
+        assert!(res.is_err());
+    }
+}

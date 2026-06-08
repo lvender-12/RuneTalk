@@ -30,7 +30,7 @@ impl AppState {
         let auth_repo = Arc::new(AuthRepositoryImpl {
             state: state.clone(),
         });
-        let auth_service_impl = Arc::new(AuthServiceImpl::new(auth_repo, state.clone()));
+        let auth_service_impl = Arc::new(AuthServiceImpl::new(auth_repo, config_arc.clone()));
 
         let user_repo = Arc::new(UserRepositoryImpl::new(state.clone()));
         let user_service_impl = Arc::new(UserServiceImpl::new(user_repo));
@@ -78,16 +78,12 @@ struct DummyUserService;
 
 #[async_trait::async_trait]
 impl crate::modules::user::service::UserService for DummyUserService {
-    async fn get_user_by_id(
+    async fn edit_user_service(
         &self,
-        _: uuid::Uuid,
-    ) -> anyhow::Result<Option<crate::entity::Adventurer>> {
-        todo!()
-    }
-    async fn get_user_by_username(
-        &self,
-        _: &str,
-    ) -> anyhow::Result<Option<crate::entity::Adventurer>> {
+        _state: &AppState,
+        _multipart: axum::extract::Multipart,
+        _id: uuid::Uuid,
+    ) -> crate::errors::AppResult<crate::modules::user::dto::EditUserResponseDto> {
         todo!()
     }
 }

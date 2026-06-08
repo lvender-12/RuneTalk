@@ -13,7 +13,10 @@ pub async fn load_redis(conf: &RedisConfig) -> AppResult<Arc<MultiplexedConnecti
 
     let url = match (conf.username.is_empty(), conf.password.is_empty()) {
         (true, true) => format!("{}://{}:{}", scheme, conf.host, conf.port),
-        (true, false) => format!("{}://:{}@{}:{}", scheme, conf.password, conf.host, conf.port),
+        (true, false) => format!(
+            "{}://:{}@{}:{}",
+            scheme, conf.password, conf.host, conf.port
+        ),
         (false, true) => format!("{}://{}@{}:{}", scheme, conf.username, conf.host, conf.port),
         (false, false) => format!(
             "{}://{}:{}@{}:{}",

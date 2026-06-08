@@ -9,6 +9,7 @@ pub struct ConfigModel {
     pub api: ApiConfig,
     pub smtp: Smtp,
     pub allowed_origins: Vec<String>,
+    pub storage: Storage,
 }
 
 #[derive(Debug, Deserialize, Clone)]
@@ -51,4 +52,9 @@ pub struct ApiConfig {
 pub struct Smtp {
     pub email: String,
     pub password: String,
+}
+
+#[derive(Debug, Deserialize, Clone)]
+pub struct Storage {
+    pub path: String,
 }

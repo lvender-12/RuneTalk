@@ -6,6 +6,7 @@ use super::{
 };
 use axum::{
     Json,
+    extract::multipart::MultipartError,
     response::{IntoResponse, Response},
 };
 use http::StatusCode;
@@ -15,6 +16,9 @@ pub type AppResult<T> = Result<T, AppError>;
 
 #[derive(Debug, thiserror::Error)]
 pub enum AppError {
+    #[error("Multipart error: {0}")]
+    Multipart(MultipartError),
+
     #[error(transparent)]
     Auth(#[from] AuthError),
 
@@ -65,8 +69,9 @@ impl AppError {
 
     pub fn status_code(&self) -> StatusCode {
         match self {
+            AppError::Multipart(_) => StatusCode::BAD_REQUEST,
             AppError::Auth(err) => err.status_code(),
-            AppError::Jwt(err) => err.status_code(), // UBAH LINE INI
+            AppError::Jwt(err) => err.status_code(),
             AppError::Validation(_) => StatusCode::BAD_REQUEST,
             AppError::Db(_)
             | AppError::Redis(_)
@@ -145,6 +150,12 @@ impl From<jsonwebtoken::errors::Error> for AppError {
             | JwtErrorKind::InvalidClaimFormat(_) => Self::Jwt(JwtError::Invalid),
             _ => Self::Jwt(JwtError::Failed(err)),
         }
+    }
+}
+
+impl From<axum::extract::multipart::MultipartError> for AppError {
+    fn from(err: axum::extract::multipart::MultipartError) -> Self {
+        Self::Multipart(err)
     }
 }
 

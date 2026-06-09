@@ -1,6 +1,6 @@
 use axum::{
     Json,
-    extract::{Multipart, State},
+    extract::{Multipart, Path, State},
     response::IntoResponse,
 };
 use axum_extra::extract::CookieJar;
@@ -39,6 +39,44 @@ pub async fn edit_user(
             success: true,
             data: serde_json::json!(user),
             message: "Berhasil Mengubah Data".to_string(),
+        }),
+    ))
+}
+
+pub async fn profile_me_handler(
+    State(state): State<AppState>,
+    jar: CookieJar,
+) -> AppResult<impl IntoResponse> {
+    let token = jar
+        .get("token")
+        .map(|c| c.value().to_string())
+        .ok_or(AuthError::Unauthorized)?;
+
+    let uuid = get_uuid_from_token(&token, &state.config.jwt.secret)?;
+    let profile = state.user_service.profile_user(uuid.parse()?).await?;
+
+    Ok((
+        StatusCode::OK,
+        Json(ApiResponse {
+            success: true,
+            data: serde_json::json!(profile),
+            message: "Berhasil Mengambil Profil".to_string(),
+        }),
+    ))
+}
+
+pub async fn profile_user_handler(
+    State(state): State<AppState>,
+    Path(id): Path<uuid::Uuid>,
+) -> AppResult<impl IntoResponse> {
+    let profile = state.user_service.profile_user(id).await?;
+
+    Ok((
+        StatusCode::OK,
+        Json(ApiResponse {
+            success: true,
+            data: serde_json::json!(profile),
+            message: "Berhasil Mengambil Profil".to_string(),
         }),
     ))
 }

@@ -86,4 +86,10 @@ impl crate::modules::user::service::UserService for DummyUserService {
     ) -> crate::errors::AppResult<crate::modules::user::dto::EditUserResponseDto> {
         todo!()
     }
+    async fn profile_user(
+        &self,
+        _id: uuid::Uuid,
+    ) -> crate::errors::AppResult<crate::modules::user::dto::ProfileUser> {
+        todo!()
+    }
 }

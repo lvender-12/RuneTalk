@@ -9,7 +9,7 @@ use crate::{
     app::AppState,
     errors::{AppResult, ValidationError},
     modules::user::{
-        dto::{EditUserDto, EditUserResponseDto},
+        dto::{EditUserDto, EditUserResponseDto, ProfileUser},
         repository::UserRepository,
     },
 };
@@ -22,6 +22,7 @@ pub trait UserService: Send + Sync {
         mut multipart: Multipart,
         id: Uuid,
     ) -> AppResult<EditUserResponseDto>;
+    async fn profile_user(&self, id: Uuid) -> AppResult<ProfileUser>;
 }
 
 pub struct UserServiceImpl {
@@ -153,6 +154,21 @@ impl UserService for UserServiceImpl {
         }
         let updated_user = self.repo.edit_user_repo(user).await?;
         Ok(updated_user)
+    }
+    async fn profile_user(&self, id: Uuid) -> AppResult<ProfileUser> {
+        let profile = self.repo.find_by_id(id).await?;
+        let profile = ProfileUser {
+            id: profile.id,
+            username: profile.username,
+            email: profile.email,
+            avatar_url: profile.avatar_url,
+            banner_url: profile.banner_url,
+            bio: profile.bio,
+            created_at: profile.created_at,
+            updated_at: profile.updated_at,
+        };
+        debug!("profile : {:?}", profile);
+        Ok(profile)
     }
 }
 

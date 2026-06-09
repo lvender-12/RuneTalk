@@ -3,6 +3,7 @@ use crate::{
     common::response::ApiResponse,
     errors::AppResult,
     modules::auth::dto::{LoginDto, RegisterDto, ResendOtpDto, VerifyOtpDto},
+    state,
 };
 use axum::{Json, extract::State, response::IntoResponse};
 use axum_extra::extract::{
@@ -102,6 +103,20 @@ pub async fn login_handler(
             success: true,
             data: serde_json::json!({}),
             message: "Berhasil Login".to_string(),
+        }),
+    ))
+}
+
+pub async fn logout_handler(jar: CookieJar) -> AppResult<impl IntoResponse> {
+    let updated_jar = jar.remove(Cookie::from("token"));
+
+    Ok((
+        StatusCode::OK,
+        updated_jar,
+        Json(ApiResponse {
+            success: true,
+            data: serde_json::json!({}),
+            message: "Berhasil Logout".to_string(),
         }),
     ))
 }

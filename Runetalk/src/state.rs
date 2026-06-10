@@ -131,4 +131,20 @@ impl crate::modules::user::service::UserService for DummyUserService {
     ) -> crate::errors::AppResult<()> {
         todo!()
     }
+
+    async fn is_ally_service(
+        &self,
+        _user1: uuid::Uuid,
+        _user2: uuid::Uuid,
+    ) -> crate::errors::AppResult<bool> {
+        todo!()
+    }
+
+    async fn remove_ally_service(
+        &self,
+        _user1: uuid::Uuid,
+        _user2: uuid::Uuid,
+    ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
 }

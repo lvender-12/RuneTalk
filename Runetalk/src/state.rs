@@ -92,4 +92,43 @@ impl crate::modules::user::service::UserService for DummyUserService {
     ) -> crate::errors::AppResult<crate::modules::user::dto::ProfileUser> {
         todo!()
     }
+
+    async fn add_friend_service(
+        &self,
+        _username: &str,
+        _id: uuid::Uuid,
+    ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
+
+    async fn list_incoming_requests_service(
+        &self,
+        _user_id: uuid::Uuid,
+    ) -> crate::errors::AppResult<Vec<crate::modules::user::dto::FriendRequest>> {
+        todo!()
+    }
+
+    async fn accept_friend_service(
+        &self,
+        _from: uuid::Uuid,
+        _to: uuid::Uuid,
+    ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
+
+    async fn reject_friend_service(
+        &self,
+        _from: uuid::Uuid,
+        _to: uuid::Uuid,
+    ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
+
+    async fn block_friend_service(
+        &self,
+        _blocker: uuid::Uuid,
+        _blocked: uuid::Uuid,
+    ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
 }

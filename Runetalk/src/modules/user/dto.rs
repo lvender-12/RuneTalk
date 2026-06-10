@@ -22,6 +22,16 @@ pub struct EditUserResponseDto {
 }
 
 #[derive(Debug, Serialize, Deserialize, FromRow)]
+pub struct FriendRequest {
+    pub id: Uuid,
+    pub from_id: Uuid,
+    pub username: String,
+    pub display_name: Option<String>,
+    pub avatar_url: Option<String>,
+    pub created_at: NaiveDateTime,
+}
+
+#[derive(Debug, Serialize, Deserialize, FromRow)]
 pub struct ProfileUser {
     pub id: Uuid,
     pub username: String,

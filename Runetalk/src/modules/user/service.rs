@@ -7,9 +7,9 @@ use uuid::Uuid;
 
 use crate::{
     app::AppState,
-    errors::{AppResult, ValidationError},
+    errors::{AppError, AppResult, DbError, ValidationError},
     modules::user::{
-        dto::{EditUserDto, EditUserResponseDto, ProfileUser},
+        dto::{EditUserDto, EditUserResponseDto, FriendRequest, ProfileUser},
         repository::UserRepository,
     },
 };
@@ -23,6 +23,13 @@ pub trait UserService: Send + Sync {
         id: Uuid,
     ) -> AppResult<EditUserResponseDto>;
     async fn profile_user(&self, id: Uuid) -> AppResult<ProfileUser>;
+    async fn add_friend_service(&self, username: &str, id: Uuid) -> AppResult<()>;
+    async fn list_incoming_requests_service(&self, user_id: Uuid) -> AppResult<Vec<FriendRequest>>;
+    async fn accept_friend_service(&self, from: Uuid, to: Uuid) -> AppResult<()>;
+    async fn reject_friend_service(&self, from: Uuid, to: Uuid) -> AppResult<()>;
+    async fn block_friend_service(&self, from: Uuid, to: Uuid) -> AppResult<()>;
+    async fn is_ally_service(&self, user1: Uuid, user2: Uuid) -> AppResult<bool>;
+    async fn remove_ally_service(&self, user1: Uuid, user2: Uuid) -> AppResult<()>;
 }
 
 pub struct UserServiceImpl {
@@ -155,6 +162,7 @@ impl UserService for UserServiceImpl {
         let updated_user = self.repo.edit_user_repo(user).await?;
         Ok(updated_user)
     }
+
     async fn profile_user(&self, id: Uuid) -> AppResult<ProfileUser> {
         let profile = self.repo.find_by_id(id).await?;
         let profile = ProfileUser {
@@ -169,6 +177,46 @@ impl UserService for UserServiceImpl {
         };
         debug!("profile : {:?}", profile);
         Ok(profile)
+    }
+
+    async fn add_friend_service(&self, username: &str, id: Uuid) -> AppResult<()> {
+        let user = self.repo.find_by_username(username).await?;
+        debug!("{:?}", user);
+
+        if let Some(user) = user {
+            self.repo.add_friend(id, user.id).await?;
+        } else {
+            return Err(AppError::Db(DbError::not_found("User")));
+        }
+        Ok(())
+    }
+
+    async fn list_incoming_requests_service(&self, user_id: Uuid) -> AppResult<Vec<FriendRequest>> {
+        let requests = self.repo.list_incoming_requests(user_id).await?;
+        Ok(requests)
+    }
+
+    async fn accept_friend_service(&self, from: Uuid, to: Uuid) -> AppResult<()> {
+        self.repo.accept_friend(from, to).await?;
+        Ok(())
+    }
+
+    async fn reject_friend_service(&self, from: Uuid, to: Uuid) -> AppResult<()> {
+        self.repo.delete_pledge(from, to).await?;
+        Ok(())
+    }
+
+    async fn block_friend_service(&self, from: Uuid, to: Uuid) -> AppResult<()> {
+        self.repo.block_user(from, to).await?;
+        Ok(())
+    }
+
+    async fn is_ally_service(&self, user1: Uuid, user2: Uuid) -> AppResult<bool> {
+        self.repo.is_ally(user1, user2).await
+    }
+
+    async fn remove_ally_service(&self, user1: Uuid, user2: Uuid) -> AppResult<()> {
+        self.repo.remove_ally(user1, user2).await
     }
 }
 

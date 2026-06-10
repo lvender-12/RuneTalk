@@ -3,7 +3,6 @@ use crate::{
     common::response::ApiResponse,
     errors::AppResult,
     modules::auth::dto::{LoginDto, RegisterDto, ResendOtpDto, VerifyOtpDto},
-    state,
 };
 use axum::{Json, extract::State, response::IntoResponse};
 use axum_extra::extract::{

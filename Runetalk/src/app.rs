@@ -11,7 +11,9 @@ use crate::{
         not_found::not_found_middleware,
     },
     model::config_model::ConfigModel,
-    modules::{auth::service::AuthService, user::service::UserService},
+    modules::{
+        auth::service::AuthService, socials::service::SocialService, user::service::UserService,
+    },
     routes::{auth_route::auth_routes, protected::protected_routes},
 };
 
@@ -22,6 +24,7 @@ pub struct AppState {
     pub config: Arc<ConfigModel>,
     pub auth_service: Arc<dyn AuthService>,
     pub user_service: Arc<dyn UserService>,
+    pub social_service: Arc<dyn SocialService>,
 }
 
 impl fmt::Debug for AppState {

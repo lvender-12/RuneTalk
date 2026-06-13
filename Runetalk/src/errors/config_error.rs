@@ -7,8 +7,5 @@ pub enum ConfigError {
     MissingField(&'static str),
 
     #[error("invalid config value for {field}: {reason}")]
-    InvalidValue {
-        field: &'static str,
-        reason: String,
-    },
+    InvalidValue { field: &'static str, reason: String },
 }

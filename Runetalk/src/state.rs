@@ -4,6 +4,7 @@ use crate::{
     model::config_model::ConfigModel,
     modules::{
         auth::{repository::AuthRepositoryImpl, service::AuthServiceImpl},
+        socials::{repository::SocialRepositoryImpl, service::SocialServiceImpl},
         user::{repository::UserRepositoryImpl, service::UserServiceImpl},
     },
 };
@@ -25,6 +26,7 @@ impl AppState {
             config: config_arc.clone(),
             auth_service: Arc::new(DummyAuthService),
             user_service: Arc::new(DummyUserService),
+            social_service: Arc::new(DummySocialService),
         };
 
         let auth_repo = Arc::new(AuthRepositoryImpl {
@@ -35,8 +37,14 @@ impl AppState {
         let user_repo = Arc::new(UserRepositoryImpl::new(state.clone()));
         let user_service_impl = Arc::new(UserServiceImpl::new(user_repo));
 
+        let social_repo = Arc::new(SocialRepositoryImpl {
+            state: state.clone(),
+        });
+        let social_service_impl = Arc::new(SocialServiceImpl::new(social_repo));
+
         state.auth_service = auth_service_impl;
         state.user_service = user_service_impl;
+        state.social_service = social_service_impl;
 
         state
     }
@@ -145,6 +153,16 @@ impl crate::modules::user::service::UserService for DummyUserService {
         _user1: uuid::Uuid,
         _user2: uuid::Uuid,
     ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
+}
+
+#[derive(Clone)]
+struct DummySocialService;
+
+#[async_trait::async_trait]
+impl crate::modules::socials::service::SocialService for DummySocialService {
+    async fn profile_user(&self, _id: uuid::Uuid) -> crate::errors::AppResult<()> {
         todo!()
     }
 }

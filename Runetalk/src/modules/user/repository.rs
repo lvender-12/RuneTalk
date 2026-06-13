@@ -80,13 +80,11 @@ impl UserRepository for UserRepositoryImpl {
     }
 
     async fn add_friend(&self, from: Uuid, to: Uuid) -> AppResult<()> {
-        sqlx::query(
-            "INSERT INTO pledges (from_id, to_id, status) VALUES ($1, $2, 'pending')",
-        )
-        .bind(from)
-        .bind(to)
-        .execute(self.state.db.as_ref())
-        .await?;
+        sqlx::query("INSERT INTO pledges (from_id, to_id, status) VALUES ($1, $2, 'pending')")
+            .bind(from)
+            .bind(to)
+            .execute(self.state.db.as_ref())
+            .await?;
         Ok(())
     }
 
@@ -105,13 +103,11 @@ impl UserRepository for UserRepositoryImpl {
 
     async fn find_pledge(&self, from: Uuid, to: Uuid) -> AppResult<Option<Pledge>> {
         Ok(
-            sqlx::query_as::<_, Pledge>(
-                "SELECT * FROM pledges WHERE from_id = $1 AND to_id = $2",
-            )
-            .bind(from)
-            .bind(to)
-            .fetch_optional(self.state.db.as_ref())
-            .await?,
+            sqlx::query_as::<_, Pledge>("SELECT * FROM pledges WHERE from_id = $1 AND to_id = $2")
+                .bind(from)
+                .bind(to)
+                .fetch_optional(self.state.db.as_ref())
+                .await?,
         )
     }
 
@@ -174,13 +170,11 @@ impl UserRepository for UserRepositoryImpl {
             .execute(&mut *tx)
             .await?;
 
-        sqlx::query(
-            "INSERT INTO pledges (from_id, to_id, status) VALUES ($1, $2, 'blocked')",
-        )
-        .bind(from)
-        .bind(to)
-        .execute(&mut *tx)
-        .await?;
+        sqlx::query("INSERT INTO pledges (from_id, to_id, status) VALUES ($1, $2, 'blocked')")
+            .bind(from)
+            .bind(to)
+            .execute(&mut *tx)
+            .await?;
 
         tx.commit().await?;
         Ok(())

@@ -1,6 +1,7 @@
 use crate::{
     app::AppState,
     middleware::auth::auth_middleware,
+    modules::graphql::service::graphql_handler,
     modules::user::handler::{
         add_friend_accept_handler, add_friend_block_handler, add_friend_handler,
         add_friend_reject_handler, check_ally_handler, edit_user, list_incoming_requests_handler,
@@ -10,11 +11,12 @@ use crate::{
 use axum::{
     Router,
     middleware::from_fn_with_state,
-    routing::{get, patch},
+    routing::{get, patch, post},
 };
 
 pub fn protected_routes(state: AppState) -> Router<AppState> {
     Router::new()
+        .route("/graphql", post(graphql_handler))
         .route("/user/edit", patch(edit_user))
         .route("/user/me", get(profile_me_handler))
         .route("/user/requests", get(list_incoming_requests_handler))

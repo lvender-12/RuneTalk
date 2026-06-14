@@ -26,7 +26,6 @@ pub struct DbConfig {
     pub username: String,
     pub password: String,
     pub name: String,
-    pub ssl_mode: String,
 }
 
 #[derive(Debug, Deserialize, Clone)]

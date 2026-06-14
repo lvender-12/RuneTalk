@@ -61,7 +61,6 @@ mod tests {
                 username: "postgres".to_string(),
                 password: "password".to_string(),
                 name: "testdb".to_string(),
-                ssl_mode: "disable".to_string(),
             },
             redis: RedisConfig {
                 host: "localhost".to_string(),

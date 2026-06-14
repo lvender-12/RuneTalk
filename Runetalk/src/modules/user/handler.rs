@@ -10,19 +10,9 @@ use uuid::Uuid;
 
 use crate::{
     app::AppState,
-    common::response::ApiResponse,
-    errors::{AppResult, AuthError},
-    utils::jwt::get_uuid_from_token,
+    common::{get_uuid::current_user_id, response::ApiResponse},
+    errors::AppResult,
 };
-
-async fn current_user_id(jar: &CookieJar, state: &AppState) -> AppResult<Uuid> {
-    let token = jar
-        .get("token")
-        .map(|c| c.value().to_string())
-        .ok_or(AuthError::Unauthorized)?;
-
-    Ok(get_uuid_from_token(&token, &state.config.jwt.secret)?.parse()?)
-}
 
 pub async fn edit_user(
     State(state): State<AppState>,

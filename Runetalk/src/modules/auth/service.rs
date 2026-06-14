@@ -156,7 +156,6 @@ mod tests {
                 username: "".to_string(),
                 password: "".to_string(),
                 name: "".to_string(),
-                ssl_mode: "".to_string(),
             },
             redis: RedisConfig {
                 host: "".to_string(),

@@ -73,8 +73,8 @@ impl AppError {
             AppError::Auth(err) => err.status_code(),
             AppError::Jwt(err) => err.status_code(),
             AppError::Validation(_) => StatusCode::BAD_REQUEST,
-            AppError::Db(_)
-            | AppError::Redis(_)
+            AppError::Db(err) => err.status_code(),
+            AppError::Redis(_)
             | AppError::Config(_)
             | AppError::Email(_)
             | AppError::Hash(_)

@@ -10,3 +10,6 @@ pub mod modules;
 pub mod routes;
 pub mod state;
 pub mod utils;
+
+#[cfg(test)]
+mod testing;

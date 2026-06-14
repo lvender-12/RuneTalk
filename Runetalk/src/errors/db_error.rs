@@ -1,3 +1,5 @@
+use http::StatusCode;
+
 #[derive(Debug, thiserror::Error)]
 pub enum DbError {
     #[error("database error: {0}")]
@@ -17,5 +19,13 @@ impl DbError {
 
     pub fn conflict(entity: &'static str) -> Self {
         Self::Conflict { entity }
+    }
+
+    pub fn status_code(&self) -> StatusCode {
+        match self {
+            Self::NotFound { .. } => StatusCode::NOT_FOUND,
+            Self::Conflict { .. } => StatusCode::CONFLICT,
+            Self::Query(_) => StatusCode::INTERNAL_SERVER_ERROR,
+        }
     }
 }

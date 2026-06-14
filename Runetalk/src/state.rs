@@ -162,7 +162,90 @@ struct DummySocialService;
 
 #[async_trait::async_trait]
 impl crate::modules::socials::service::SocialService for DummySocialService {
-    async fn profile_user(&self, _id: uuid::Uuid) -> crate::errors::AppResult<()> {
+    async fn create_guild_service(
+        &self,
+        _dto: crate::modules::socials::dto::GuildDto,
+        _id: uuid::Uuid,
+    ) -> crate::errors::AppResult<crate::entity::Guild> {
+        todo!()
+    }
+
+    async fn get_guild_service(
+        &self,
+        _guild_id: uuid::Uuid,
+        _user_id: uuid::Uuid,
+    ) -> crate::errors::AppResult<crate::entity::Guild> {
+        todo!()
+    }
+
+    async fn edit_guild_service(
+        &self,
+        _guild_id: uuid::Uuid,
+        _user_id: uuid::Uuid,
+        _dto: crate::modules::socials::dto::EditGuildDto,
+    ) -> crate::errors::AppResult<crate::entity::Guild> {
+        todo!()
+    }
+
+    async fn delete_guild_service(
+        &self,
+        _guild_id: uuid::Uuid,
+        _user_id: uuid::Uuid,
+    ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
+
+    async fn create_rift_service(
+        &self,
+        _guild_id: uuid::Uuid,
+        _user_id: uuid::Uuid,
+        _dto: crate::modules::socials::dto::CreateRiftDto,
+    ) -> crate::errors::AppResult<crate::entity::Rift> {
+        todo!()
+    }
+
+    async fn edit_rift_service(
+        &self,
+        _guild_id: uuid::Uuid,
+        _rift_id: uuid::Uuid,
+        _user_id: uuid::Uuid,
+        _dto: crate::modules::socials::dto::EditRiftDto,
+    ) -> crate::errors::AppResult<crate::entity::Rift> {
+        todo!()
+    }
+
+    async fn delete_rift_service(
+        &self,
+        _guild_id: uuid::Uuid,
+        _rift_id: uuid::Uuid,
+        _user_id: uuid::Uuid,
+    ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
+
+    async fn join_guild_service(
+        &self,
+        _invite_code: &str,
+        _user_id: uuid::Uuid,
+    ) -> crate::errors::AppResult<crate::entity::Guild> {
+        todo!()
+    }
+
+    async fn get_invite_link_service(
+        &self,
+        _guild_id: uuid::Uuid,
+        _user_id: uuid::Uuid,
+        _origin: &str,
+    ) -> crate::errors::AppResult<crate::modules::socials::dto::InviteLinkResponse> {
+        todo!()
+    }
+
+    async fn regenerate_invite_service(
+        &self,
+        _guild_id: uuid::Uuid,
+        _user_id: uuid::Uuid,
+        _origin: &str,
+    ) -> crate::errors::AppResult<crate::modules::socials::dto::InviteLinkResponse> {
         todo!()
     }
 }

@@ -94,7 +94,7 @@ npm run dev
 The frontend currently uses schema-shaped mock data in `frontend/src/app/data/mock.ts`, so it can run before the backend API is fully wired.
 
 ### Docker (Database)
-
+    
 ```bash
 cd docker/postgresql
 docker compose up -d
@@ -102,7 +102,7 @@ docker compose up -d
 
 ## 📖 Documentation
 
-API docs are available at [docs/api/be-api.md]. It covers authentication, user/friendship management, guilds & rifts, WebSockets, Server-Sent Events (SSE), and GraphQL interfaces.
+API docs are available at [docs/api/be-api.md](docs/api/be-api.md). It covers authentication, user/friendship management, guilds & rifts, WebSockets, Server-Sent Events (SSE), and GraphQL interfaces.
 
 ## 📜 License
 

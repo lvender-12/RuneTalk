@@ -102,7 +102,7 @@ docker compose up -d
 
 ## 📖 Documentation
 
-API docs tersedia di [`/docs`](./docs).
+API docs are available at [docs/api/be-api.md]. It covers authentication, user/friendship management, guilds & rifts, WebSockets, Server-Sent Events (SSE), and GraphQL interfaces.
 
 ## 📜 License
 

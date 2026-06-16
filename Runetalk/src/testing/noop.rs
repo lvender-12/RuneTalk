@@ -15,6 +15,10 @@ use crate::{
             dto::{EditUserResponseDto, FriendRequest, ProfileUser},
             service::UserService,
         },
+        ws::{
+            dto::{SendEchoDto, SendWhisperDto},
+            service::WsService,
+        },
     },
 };
 
@@ -58,7 +62,7 @@ impl UserService for NoopUserService {
         unreachable!("user service should not be called in social tests")
     }
 
-    async fn add_friend_service(&self, _: &str, _: Uuid) -> AppResult<()> {
+    async fn add_friend_service(&self, _: &str, _: Uuid) -> AppResult<(FriendRequest, Uuid)> {
         unreachable!("user service should not be called in social tests")
     }
 
@@ -171,5 +175,43 @@ impl crate::modules::socials::service::SocialService for NoopSocialService {
         _: &str,
     ) -> AppResult<crate::modules::socials::dto::InviteLinkResponse> {
         unreachable!("social service should not be called in repository tests")
+    }
+}
+
+#[derive(Clone)]
+pub struct NoopWsService;
+
+#[async_trait]
+impl WsService for NoopWsService {
+    async fn verify_rift_access(&self, _: Uuid, _: Uuid) -> AppResult<()> {
+        unreachable!("ws service should not be called in social tests")
+    }
+
+    async fn verify_scroll_access(&self, _: Uuid, _: Uuid) -> AppResult<()> {
+        unreachable!("ws service should not be called in social tests")
+    }
+
+    async fn send_echo_service(&self, _: SendEchoDto, _: Uuid) -> AppResult<crate::entity::Echo> {
+        unreachable!("ws service should not be called in social tests")
+    }
+
+    async fn send_whisper_service(
+        &self,
+        _: SendWhisperDto,
+        _: Uuid,
+    ) -> AppResult<crate::entity::Whisper> {
+        unreachable!("ws service should not be called in social tests")
+    }
+
+    async fn scroll_recipient_id(&self, _: Uuid, _: Uuid) -> AppResult<Uuid> {
+        unreachable!("ws service should not be called in social tests")
+    }
+
+    async fn set_presence(
+        &self,
+        _: Uuid,
+        _: crate::entity::PresenceStatus,
+    ) -> AppResult<crate::entity::Presence> {
+        unreachable!("ws service should not be called in social tests")
     }
 }

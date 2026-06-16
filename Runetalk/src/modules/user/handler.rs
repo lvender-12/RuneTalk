@@ -12,6 +12,7 @@ use crate::{
     app::AppState,
     common::{get_uuid::current_user_id, response::ApiResponse},
     errors::AppResult,
+    modules::sse::dto::SseFriendEvent,
 };
 
 pub async fn edit_user(
@@ -78,10 +79,18 @@ pub async fn add_friend_handler(
 ) -> AppResult<impl IntoResponse> {
     let from = current_user_id(&jar, &state).await?;
 
-    state
+    let (request, recipient_id) = state
         .user_service
         .add_friend_service(&username, from)
         .await?;
+
+    state
+        .sse_hub
+        .send_friend_event(
+            recipient_id,
+            &SseFriendEvent::FriendRequestReceived { data: request },
+        )
+        .await;
 
     Ok((
         StatusCode::OK,
@@ -122,6 +131,19 @@ pub async fn add_friend_accept_handler(
 
     state.user_service.accept_friend_service(id, to).await?;
 
+    let profile = state.user_service.profile_user(to).await?;
+    state
+        .sse_hub
+        .send_friend_event(
+            id,
+            &SseFriendEvent::FriendRequestAccepted {
+                user_id: to,
+                username: profile.username,
+                display_name: None,
+            },
+        )
+        .await;
+
     Ok((
         StatusCode::OK,
         Json(ApiResponse {
@@ -140,6 +162,11 @@ pub async fn add_friend_reject_handler(
     let to = current_user_id(&jar, &state).await?;
 
     state.user_service.reject_friend_service(id, to).await?;
+
+    state
+        .sse_hub
+        .send_friend_event(id, &SseFriendEvent::FriendRequestRejected { user_id: to })
+        .await;
 
     Ok((
         StatusCode::OK,
@@ -203,6 +230,16 @@ pub async fn remove_ally_handler(
         .user_service
         .remove_ally_service(current_user, friend_id)
         .await?;
+
+    state
+        .sse_hub
+        .send_friend_event(
+            friend_id,
+            &SseFriendEvent::FriendRemoved {
+                user_id: current_user,
+            },
+        )
+        .await;
 
     Ok((
         StatusCode::OK,

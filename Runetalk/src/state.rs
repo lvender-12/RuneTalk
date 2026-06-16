@@ -6,6 +6,12 @@ use crate::{
         auth::{repository::AuthRepositoryImpl, service::AuthServiceImpl},
         socials::{repository::SocialRepositoryImpl, service::SocialServiceImpl},
         user::{repository::UserRepositoryImpl, service::UserServiceImpl},
+        ws::{
+            hub::WsHub,
+            repository::WsRepositoryImpl,
+            service::{WsService, WsServiceImpl},
+        },
+        sse::hub::SseHub,
     },
 };
 use std::sync::Arc;
@@ -27,6 +33,9 @@ impl AppState {
             auth_service: Arc::new(DummyAuthService),
             user_service: Arc::new(DummyUserService),
             social_service: Arc::new(DummySocialService),
+            ws_service: Arc::new(DummyWsService),
+            ws_hub: WsHub::new(),
+            sse_hub: SseHub::new(),
         };
 
         let auth_repo = Arc::new(AuthRepositoryImpl {
@@ -40,11 +49,15 @@ impl AppState {
         let social_repo = Arc::new(SocialRepositoryImpl {
             state: state.clone(),
         });
-        let social_service_impl = Arc::new(SocialServiceImpl::new(social_repo));
+        let social_service_impl = Arc::new(SocialServiceImpl::new(social_repo.clone()));
+
+        let ws_repo = Arc::new(WsRepositoryImpl::new(state.clone()));
+        let ws_service_impl = Arc::new(WsServiceImpl::new(ws_repo, social_repo));
 
         state.auth_service = auth_service_impl;
         state.user_service = user_service_impl;
         state.social_service = social_service_impl;
+        state.ws_service = ws_service_impl;
 
         state
     }
@@ -105,7 +118,10 @@ impl crate::modules::user::service::UserService for DummyUserService {
         &self,
         _username: &str,
         _id: uuid::Uuid,
-    ) -> crate::errors::AppResult<()> {
+    ) -> crate::errors::AppResult<(
+        crate::modules::user::dto::FriendRequest,
+        uuid::Uuid,
+    )> {
         todo!()
     }
 
@@ -246,6 +262,60 @@ impl crate::modules::socials::service::SocialService for DummySocialService {
         _user_id: uuid::Uuid,
         _origin: &str,
     ) -> crate::errors::AppResult<crate::modules::socials::dto::InviteLinkResponse> {
+        todo!()
+    }
+}
+
+#[derive(Clone)]
+struct DummyWsService;
+
+#[async_trait::async_trait]
+impl WsService for DummyWsService {
+    async fn verify_rift_access(
+        &self,
+        _: uuid::Uuid,
+        _: uuid::Uuid,
+    ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
+
+    async fn verify_scroll_access(
+        &self,
+        _: uuid::Uuid,
+        _: uuid::Uuid,
+    ) -> crate::errors::AppResult<()> {
+        todo!()
+    }
+
+    async fn send_echo_service(
+        &self,
+        _: crate::modules::ws::dto::SendEchoDto,
+        _: uuid::Uuid,
+    ) -> crate::errors::AppResult<crate::entity::Echo> {
+        todo!()
+    }
+
+    async fn send_whisper_service(
+        &self,
+        _: crate::modules::ws::dto::SendWhisperDto,
+        _: uuid::Uuid,
+    ) -> crate::errors::AppResult<crate::entity::Whisper> {
+        todo!()
+    }
+
+    async fn scroll_recipient_id(
+        &self,
+        _: uuid::Uuid,
+        _: uuid::Uuid,
+    ) -> crate::errors::AppResult<uuid::Uuid> {
+        todo!()
+    }
+
+    async fn set_presence(
+        &self,
+        _: uuid::Uuid,
+        _: crate::entity::PresenceStatus,
+    ) -> crate::errors::AppResult<crate::entity::Presence> {
         todo!()
     }
 }

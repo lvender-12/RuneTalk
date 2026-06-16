@@ -7,10 +7,14 @@ use axum::{
 use crate::{
     app::AppState,
     middleware::auth::auth_middleware,
-    modules::socials::handler::{
-        create_guild_handler, create_rift_handler, delete_guild_handler, delete_rift_handler,
-        edit_guild_handler, edit_rift_handler, get_guild_handler, get_invite_link_handler,
-        join_guild_handler, regenerate_invite_handler,
+    modules::{
+        socials::handler::{
+            create_guild_handler, create_rift_handler, delete_guild_handler, delete_rift_handler,
+            edit_guild_handler, edit_rift_handler, get_guild_handler, get_invite_link_handler,
+            join_guild_handler, regenerate_invite_handler,
+        },
+        sse::handler::{sse_friends_handler, sse_messages_handler},
+        ws::handler::ws_handler,
     },
 };
 
@@ -33,6 +37,15 @@ pub fn social_test_router(state: AppState) -> Router {
             "/guild/{guild_id}/rift/{rift_id}",
             patch(edit_rift_handler).delete(delete_rift_handler),
         )
+        .layer(from_fn_with_state(state.clone(), auth_middleware))
+        .with_state(state)
+}
+
+pub fn realtime_test_router(state: AppState) -> Router {
+    Router::new()
+        .route("/ws", get(ws_handler))
+        .route("/sse/friends", get(sse_friends_handler))
+        .route("/sse/messages", get(sse_messages_handler))
         .layer(from_fn_with_state(state.clone(), auth_middleware))
         .with_state(state)
 }

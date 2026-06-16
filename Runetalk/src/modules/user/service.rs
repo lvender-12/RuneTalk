@@ -23,7 +23,7 @@ pub trait UserService: Send + Sync {
         id: Uuid,
     ) -> AppResult<EditUserResponseDto>;
     async fn profile_user(&self, id: Uuid) -> AppResult<ProfileUser>;
-    async fn add_friend_service(&self, username: &str, id: Uuid) -> AppResult<()>;
+    async fn add_friend_service(&self, username: &str, id: Uuid) -> AppResult<(FriendRequest, Uuid)>;
     async fn list_incoming_requests_service(&self, user_id: Uuid) -> AppResult<Vec<FriendRequest>>;
     async fn accept_friend_service(&self, from: Uuid, to: Uuid) -> AppResult<()>;
     async fn reject_friend_service(&self, from: Uuid, to: Uuid) -> AppResult<()>;
@@ -179,16 +179,16 @@ impl UserService for UserServiceImpl {
         Ok(profile)
     }
 
-    async fn add_friend_service(&self, username: &str, id: Uuid) -> AppResult<()> {
+    async fn add_friend_service(&self, username: &str, id: Uuid) -> AppResult<(FriendRequest, Uuid)> {
         let user = self.repo.find_by_username(username).await?;
         debug!("{:?}", user);
 
         if let Some(user) = user {
-            self.repo.add_friend(id, user.id).await?;
+            let request = self.repo.add_friend(id, user.id).await?;
+            Ok((request, user.id))
         } else {
-            return Err(AppError::Db(DbError::not_found("User")));
+            Err(AppError::Db(DbError::not_found("User")))
         }
-        Ok(())
     }
 
     async fn list_incoming_requests_service(&self, user_id: Uuid) -> AppResult<Vec<FriendRequest>> {

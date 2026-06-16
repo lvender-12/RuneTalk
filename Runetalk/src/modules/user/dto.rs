@@ -21,7 +21,7 @@ pub struct EditUserResponseDto {
     pub bio: Option<String>,
 }
 
-#[derive(Debug, Serialize, Deserialize, FromRow)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct FriendRequest {
     pub id: Uuid,
     pub from_id: Uuid,

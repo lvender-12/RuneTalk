@@ -15,7 +15,7 @@ pub trait UserRepository: Send + Sync {
     async fn find_by_id(&self, id: Uuid) -> AppResult<Adventurer>;
     async fn edit_user_repo(&self, dto: Adventurer) -> AppResult<EditUserResponseDto>;
     async fn find_by_username(&self, username: &str) -> AppResult<Option<Adventurer>>;
-    async fn add_friend(&self, from: Uuid, to: Uuid) -> AppResult<()>;
+    async fn add_friend(&self, from: Uuid, to: Uuid) -> AppResult<FriendRequest>;
     async fn list_incoming_requests(&self, user_id: Uuid) -> AppResult<Vec<FriendRequest>>;
     async fn find_pledge(&self, from: Uuid, to: Uuid) -> AppResult<Option<Pledge>>;
     async fn delete_pledge(&self, from: Uuid, to: Uuid) -> AppResult<()>;
@@ -79,13 +79,24 @@ impl UserRepository for UserRepositoryImpl {
         )
     }
 
-    async fn add_friend(&self, from: Uuid, to: Uuid) -> AppResult<()> {
+    async fn add_friend(&self, from: Uuid, to: Uuid) -> AppResult<FriendRequest> {
         sqlx::query("INSERT INTO pledges (from_id, to_id, status) VALUES ($1, $2, 'pending')")
             .bind(from)
             .bind(to)
             .execute(self.state.db.as_ref())
             .await?;
-        Ok(())
+
+        sqlx::query_as::<_, FriendRequest>(
+            "SELECT p.id, p.from_id, a.username, a.display_name, a.avatar_url, p.created_at
+             FROM pledges p
+             JOIN adventurers a ON a.id = p.from_id
+             WHERE p.from_id = $1 AND p.to_id = $2 AND p.status = 'pending'",
+        )
+        .bind(from)
+        .bind(to)
+        .fetch_one(self.state.db.as_ref())
+        .await
+        .map_err(Into::into)
     }
 
     async fn list_incoming_requests(&self, user_id: Uuid) -> AppResult<Vec<FriendRequest>> {

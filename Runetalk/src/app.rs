@@ -12,7 +12,9 @@ use crate::{
     },
     model::config_model::ConfigModel,
     modules::{
-        auth::service::AuthService, socials::service::SocialService, user::service::UserService,
+        auth::service::AuthService, socials::service::SocialService,
+        sse::hub::SseHub,
+        user::service::UserService, ws::{hub::WsHub, service::WsService},
     },
     routes::{auth_route::auth_routes, protected::protected_routes},
 };
@@ -25,6 +27,9 @@ pub struct AppState {
     pub auth_service: Arc<dyn AuthService>,
     pub user_service: Arc<dyn UserService>,
     pub social_service: Arc<dyn SocialService>,
+    pub ws_service: Arc<dyn WsService>,
+    pub ws_hub: WsHub,
+    pub sse_hub: SseHub,
 }
 
 impl fmt::Debug for AppState {
@@ -35,6 +40,10 @@ impl fmt::Debug for AppState {
             .field("config", &self.config)
             .field("auth_service", &"Arc<dyn AuthService>")
             .field("user_service", &"Arc<dyn UserService>")
+            .field("social_service", &"Arc<dyn SocialService>")
+            .field("ws_service", &"Arc<dyn WsService>")
+            .field("ws_hub", &"WsHub")
+            .field("sse_hub", &"SseHub")
             .finish()
     }
 }

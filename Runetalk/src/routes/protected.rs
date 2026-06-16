@@ -14,6 +14,8 @@ use crate::{
             list_incoming_requests_handler, profile_me_handler, profile_user_handler,
             remove_ally_handler,
         },
+        sse::handler::{sse_friends_handler, sse_messages_handler},
+        ws::handler::ws_handler,
     },
 };
 use axum::{
@@ -54,5 +56,8 @@ pub fn protected_routes(state: AppState) -> Router<AppState> {
             patch(edit_rift_handler).delete(delete_rift_handler),
         )
         .route("/user/{id}", get(profile_user_handler))
+        .route("/ws", get(ws_handler))
+        .route("/sse/friends", get(sse_friends_handler))
+        .route("/sse/messages", get(sse_messages_handler))
         .layer(from_fn_with_state(state.clone(), auth_middleware))
 }

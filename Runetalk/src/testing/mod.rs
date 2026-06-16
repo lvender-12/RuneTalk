@@ -11,12 +11,27 @@ use sqlx::PgPool;
 use crate::{
     app::AppState,
     model::config_model::ConfigModel,
-    modules::socials::service::SocialService,
+    modules::{
+        socials::service::SocialService,
+        sse::hub::SseHub,
+        ws::{hub::WsHub, service::WsService},
+    },
     utils::jwt::generate_jwt,
 };
 use uuid::Uuid;
 
 pub async fn test_app_state(social_service: Arc<dyn SocialService>) -> AppState {
+    test_app_state_with_ws(social_service, Arc::new(noop::NoopWsService)).await
+}
+
+pub async fn test_ws_app_state(ws_service: Arc<dyn WsService>) -> AppState {
+    test_app_state_with_ws(Arc::new(noop::NoopSocialService), ws_service).await
+}
+
+pub async fn test_app_state_with_ws(
+    social_service: Arc<dyn SocialService>,
+    ws_service: Arc<dyn WsService>,
+) -> AppState {
     let config = Arc::new(fixtures::dummy_config());
     let db = PgPoolOptions::new()
         .max_connections(1)
@@ -36,6 +51,9 @@ pub async fn test_app_state(social_service: Arc<dyn SocialService>) -> AppState 
         auth_service: Arc::new(noop::NoopAuthService),
         user_service: Arc::new(noop::NoopUserService),
         social_service,
+        ws_service,
+        ws_hub: WsHub::new(),
+        sse_hub: SseHub::new(),
     }
 }
 
@@ -54,6 +72,9 @@ pub async fn repo_test_state(pool: PgPool) -> AppState {
         auth_service: Arc::new(noop::NoopAuthService),
         user_service: Arc::new(noop::NoopUserService),
         social_service: Arc::new(noop::NoopSocialService),
+        ws_service: Arc::new(noop::NoopWsService),
+        ws_hub: WsHub::new(),
+        sse_hub: SseHub::new(),
     }
 }
 

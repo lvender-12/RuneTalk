@@ -8,7 +8,7 @@ anyhow = "1.0.102"
 argon2 = { version = "0.5.3", features = ["std"] }
 axum = { version = "0.8.9", features = ["multipart", "macros", "ws"] }
 axum-extra = { version = "0.12.6", features = ["cookie"] }
-axum-test = "20.0.0"
+axum-test = { version = "20.0.0", features = ["ws"] }
 chrono = { version = "0.4.44", features = ["serde"] }
 config = "0.15.23"
 futures = "0.3.32"

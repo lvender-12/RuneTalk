@@ -2,10 +2,13 @@ use chrono::Utc;
 use uuid::Uuid;
 
 use crate::{
-    entity::{Guild, Rift, RiftType},
+    entity::{
+        Echo, Guild, MessageType, Presence, PresenceStatus, Rift, RiftType, Scroll, Whisper,
+    },
     model::config_model::{
         ApiConfig, AppConfig, ConfigModel, DbConfig, JwtConfig, RedisConfig, Smtp, Storage,
     },
+    modules::user::dto::FriendRequest,
 };
 
 pub fn dummy_config() -> ConfigModel {
@@ -70,6 +73,63 @@ pub fn dummy_rift(guild_id: Uuid) -> Rift {
         rift_type: RiftType::Text,
         position: 0,
         is_private: false,
+        created_at: Utc::now().naive_utc(),
+    }
+}
+
+pub fn dummy_scroll(initiator_id: Uuid, recipient_id: Uuid) -> Scroll {
+    Scroll {
+        id: Uuid::new_v4(),
+        initiator_id,
+        recipient_id,
+        created_at: Utc::now().naive_utc(),
+    }
+}
+
+pub fn dummy_echo(rift_id: Uuid, adventurer_id: Uuid) -> Echo {
+    Echo {
+        id: Uuid::new_v4(),
+        rift_id,
+        adventurer_id,
+        reply_to_id: None,
+        content: "hello echo".to_string(),
+        message_type: MessageType::Text,
+        is_pinned: false,
+        created_at: Utc::now().naive_utc(),
+        edited_at: None,
+    }
+}
+
+pub fn dummy_whisper(scroll_id: Uuid, sender_id: Uuid) -> Whisper {
+    Whisper {
+        id: Uuid::new_v4(),
+        scroll_id,
+        sender_id,
+        reply_to_id: None,
+        content: "hello whisper".to_string(),
+        message_type: MessageType::Text,
+        is_read: false,
+        created_at: Utc::now().naive_utc(),
+        edited_at: None,
+    }
+}
+
+pub fn dummy_presence(user_id: Uuid, status: PresenceStatus) -> Presence {
+    Presence {
+        adventurer_id: user_id,
+        status,
+        custom_status: None,
+        last_seen: Utc::now().naive_utc(),
+    }
+}
+
+pub fn dummy_friend_request(from_id: Uuid) -> FriendRequest {
+    FriendRequest {
+        id: Uuid::new_v4(),
+        from_id,
+        username: "friend_user".to_string(),
+        display_name: Some("Friend User".to_string()),
+        avatar_url: None,
         created_at: Utc::now().naive_utc(),
     }
 }

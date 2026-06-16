@@ -17,9 +17,10 @@ pub enum RiftType {
     Announcement,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Type)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, Type, Default)]
 #[sqlx(type_name = "varchar", rename_all = "lowercase")]
 pub enum MessageType {
+    #[default]
     Text,
     Image,
     File,

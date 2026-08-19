@@ -9,13 +9,13 @@ async fn main() {
         .with(EnvFilter::try_from_default_env().unwrap_or_else(|_| EnvFilter::new("debug")))
         .init();
 
-    let conf = load_config().expect("config error");
-    debug!("config : {:?}", conf);
+    let conf = load_config().expect("Failed to load configuration");
+    debug!("Config loaded: {:?}", conf);
 
     let host = format!("{}:{}", conf.app.host, conf.app.port);
 
     let state = runetalk::app::AppState::init(conf).await;
-    debug!("State : {:?}", state);
+    debug!("App state initialized: {:?}", state);
 
     let app = create_app(state);
     let listener = tokio::net::TcpListener::bind(&host)

@@ -28,6 +28,36 @@ pub async fn test_ws_app_state(ws_service: Arc<dyn WsService>) -> AppState {
     test_app_state_with_ws(Arc::new(noop::NoopSocialService), ws_service).await
 }
 
+async fn mock_redis_port() -> u16 {
+    use tokio::io::{AsyncReadExt, AsyncWriteExt};
+    use tokio::net::TcpListener;
+
+    let listener = TcpListener::bind("127.0.0.1:0").await.expect("bind mock redis listener");
+    let port = listener.local_addr().expect("mock redis local addr").port();
+
+    tokio::spawn(async move {
+        while let Ok((mut socket, _)) = listener.accept().await {
+            tokio::spawn(async move {
+                let mut buf = [0u8; 4096];
+                while let Ok(n) = socket.read(&mut buf).await {
+                    if n == 0 {
+                        break;
+                    }
+                    let req = String::from_utf8_lossy(&buf[..n]);
+                    // In redis-rs RESP3/RESP2, commands are sent as arrays: *<num_args>\r\n...
+                    // Count how many commands were received in this chunk and respond to each
+                    let count = req.matches('*').count().max(1);
+                    for _ in 0..count {
+                        let _ = socket.write_all(b"+OK\r\n").await;
+                    }
+                }
+            });
+        }
+    });
+
+    port
+}
+
 pub async fn test_app_state_with_ws(
     social_service: Arc<dyn SocialService>,
     ws_service: Arc<dyn WsService>,
@@ -38,7 +68,8 @@ pub async fn test_app_state_with_ws(
         .connect_lazy("postgres://localhost:5432/runetalk")
         .expect("lazy db pool");
 
-    let client = Client::open("redis://127.0.0.1:6379").expect("redis client");
+    let port = mock_redis_port().await;
+    let client = Client::open(format!("redis://127.0.0.1:{}", port)).expect("redis client");
     let redis = client
         .get_multiplexed_async_connection()
         .await
@@ -59,7 +90,8 @@ pub async fn test_app_state_with_ws(
 
 pub async fn repo_test_state(pool: PgPool) -> AppState {
     let config = Arc::new(fixtures::dummy_config());
-    let client = Client::open("redis://127.0.0.1:6379").expect("redis client");
+    let port = mock_redis_port().await;
+    let client = Client::open(format!("redis://127.0.0.1:{}", port)).expect("redis client");
     let redis = client
         .get_multiplexed_async_connection()
         .await

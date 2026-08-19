@@ -50,13 +50,6 @@ impl UserService for UserServiceImpl {
         mut multipart: Multipart,
         id: Uuid,
     ) -> AppResult<EditUserResponseDto> {
-        let cwd = std::env::current_dir().unwrap();
-        debug!("Aplikasi berjalan di: {:?}", cwd);
-        debug!(
-            "Path lengkap yang dituju: {:?}",
-            format!("{}/{}", state.config.storage.path, id)
-        );
-
         let mut user = self.repo.find_by_id(id).await?;
         let mut edit_user_dto = EditUserDto {
             display_name: None,
@@ -78,7 +71,7 @@ impl UserService for UserServiceImpl {
 
                 if !mime.starts_with("image/") {
                     return Err(ValidationError::Invalid(
-                        "File harus berupa gambar atau gif".to_string(),
+                        "File must be an image or gif".to_string(),
                     )
                     .into());
                 }
@@ -109,27 +102,26 @@ impl UserService for UserServiceImpl {
                 };
 
                 let path = format!("{}/{}", dir_path, new_file_name);
-                debug!("Mencoba menulis file ke: {}", path);
+                debug!("Writing uploaded file to: {}", path);
 
                 if name == "avatar" {
-                    if let Some(ref old_avatar) = user.avatar_url {
-                        if tokio::fs::metadata(old_avatar).await.is_ok() {
-                            debug!("Menghapus avatar lama: {}", old_avatar);
-                            let _ = tokio::fs::remove_file(old_avatar).await;
-                        }
+                    if let Some(ref old_avatar) = user.avatar_url
+                        && tokio::fs::metadata(old_avatar).await.is_ok()
+                    {
+                        debug!("Removing previous avatar: {}", old_avatar);
+                        let _ = tokio::fs::remove_file(old_avatar).await;
                     }
-                } else if name == "banner" {
-                    if let Some(ref old_banner) = user.banner_url {
-                        if tokio::fs::metadata(old_banner).await.is_ok() {
-                            debug!("Menghapus banner lama: {}", old_banner);
-                            let _ = tokio::fs::remove_file(old_banner).await;
-                        }
-                    }
+                } else if name == "banner"
+                    && let Some(ref old_banner) = user.banner_url
+                    && tokio::fs::metadata(old_banner).await.is_ok()
+                {
+                    debug!("Removing previous banner: {}", old_banner);
+                    let _ = tokio::fs::remove_file(old_banner).await;
                 }
 
                 let mut file = File::create(&path).await?;
                 file.write_all(&bytes).await?;
-                debug!("Berhasil menulis file");
+                debug!("Uploaded file written successfully");
 
                 if name == "avatar" {
                     edit_user_dto.avatar_url = Some(path);
@@ -138,7 +130,7 @@ impl UserService for UserServiceImpl {
                 }
             } else {
                 let text = field.text().await?;
-                debug!("field {} : {}", name, text);
+                debug!("Field {} : {}", name, text);
                 if name == "display_name" {
                     edit_user_dto.display_name = Some(text);
                 } else if name == "bio" {

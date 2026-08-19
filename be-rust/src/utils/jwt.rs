@@ -21,7 +21,7 @@ pub fn generate_jwt(uuid: String, email: String, conf: &ConfigModel) -> AppResul
     let token = encode(
         &Header::default(),
         &claims,
-        &EncodingKey::from_secret(&conf.jwt.secret.as_bytes()),
+        &EncodingKey::from_secret(conf.jwt.secret.as_bytes()),
     )?;
 
     Ok(token)

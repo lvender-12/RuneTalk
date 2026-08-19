@@ -164,6 +164,20 @@ impl WsHub {
         }
     }
 
+    pub async fn broadcast_all_except(&self, exclude_conn_id: Uuid, message: &WsServerMessage) {
+        let payload = match serde_json::to_string(message) {
+            Ok(payload) => payload,
+            Err(_) => return,
+        };
+
+        let connections = self.inner.connections.read().await;
+        for (conn_id, tx) in connections.iter() {
+            if *conn_id != exclude_conn_id {
+                let _ = tx.try_send(payload.clone());
+            }
+        }
+    }
+
     pub async fn send_to_connection(&self, conn_id: Uuid, message: &WsServerMessage) {
         let payload = match serde_json::to_string(message) {
             Ok(payload) => payload,

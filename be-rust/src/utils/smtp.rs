@@ -14,7 +14,7 @@ pub fn send_otp(
     #[cfg(test)]
     {
         let _ = (smtp_email, smtp_password, to_email, otp);
-        return Ok(true);
+        Ok(true)
     }
 
     #[cfg(not(test))]
@@ -23,7 +23,7 @@ pub fn send_otp(
             .from(smtp_email.parse()?)
             .to(to_email.parse()?)
             .subject("OTP Verification")
-            .body(format!("Your OTP is : {}", otp).to_string())?;
+            .body(format!("Your OTP is: {}", otp))?;
 
         let creds = Credentials::new(smtp_email.to_string(), smtp_password.to_string());
 
@@ -33,7 +33,7 @@ pub fn send_otp(
 
         mailer.send(&email)?;
 
-        debug!("Sended");
+        debug!("OTP email sent successfully");
 
         Ok(true)
     }

@@ -32,10 +32,6 @@ pub async fn ws_handler(
 async fn handle_socket(socket: WebSocket, state: AppState, user_id: Uuid) {
     let (conn_id, mut hub_rx, is_first_connection) = state.ws_hub.register(user_id).await;
 
-    if is_first_connection {
-        mark_presence(&state, user_id, PresenceStatus::Online).await;
-    }
-
     send_direct(
         &state,
         conn_id,
@@ -44,6 +40,10 @@ async fn handle_socket(socket: WebSocket, state: AppState, user_id: Uuid) {
         },
     )
     .await;
+
+    if is_first_connection {
+        mark_presence_except(&state, conn_id, user_id, PresenceStatus::Online).await;
+    }
 
     let (mut sender, mut receiver) = socket.split();
 
@@ -72,10 +72,8 @@ async fn handle_socket(socket: WebSocket, state: AppState, user_id: Uuid) {
         }
     }
 
-    if let Some((disconnected_user, is_last_connection)) = state.ws_hub.unregister(conn_id).await {
-        if is_last_connection {
-            mark_presence(&state, disconnected_user, PresenceStatus::Offline).await;
-        }
+    if let Some((disconnected_user, true)) = state.ws_hub.unregister(conn_id).await {
+        mark_presence(&state, disconnected_user, PresenceStatus::Offline).await;
     }
 }
 
@@ -87,6 +85,26 @@ async fn mark_presence(state: &AppState, user_id: Uuid, status: PresenceStatus) 
                 user_id,
                 status,
             })
+            .await;
+    }
+}
+
+async fn mark_presence_except(
+    state: &AppState,
+    exclude_conn_id: Uuid,
+    user_id: Uuid,
+    status: PresenceStatus,
+) {
+    if state.ws_service.set_presence(user_id, status).await.is_ok() {
+        state
+            .ws_hub
+            .broadcast_all_except(
+                exclude_conn_id,
+                &WsServerMessage::PresenceUpdate {
+                    user_id,
+                    status,
+                },
+            )
             .await;
     }
 }

@@ -11,29 +11,29 @@ interface PresenceConfig {
 export const PRESENCE_CONFIG: Record<PresenceStatus, PresenceConfig> = {
   online: {
     label: "Online",
-    toggleEmoji: "🟢",
-    defaultStatusEmoji: "🗺️",
+    toggleEmoji: "",
+    defaultStatusEmoji: "",
     defaultStatusText: "Mapping the runes",
     dotClass: "bg-[#48c78e]",
   },
   idle: {
     label: "Idle",
-    toggleEmoji: "🌙",
-    defaultStatusEmoji: "📜",
+    toggleEmoji: "",
+    defaultStatusEmoji: "",
     defaultStatusText: "Studying old scrolls",
     dotClass: "bg-[#d9b44a]",
   },
   dnd: {
     label: "Dnd",
-    toggleEmoji: "⛔",
-    defaultStatusEmoji: "🛡️",
+    toggleEmoji: "",
+    defaultStatusEmoji: "",
     defaultStatusText: "Guarding the gate",
     dotClass: "bg-[#d96b4d]",
   },
   offline: {
     label: "Offline",
-    toggleEmoji: "⚫",
-    defaultStatusEmoji: "💤",
+    toggleEmoji: "",
+    defaultStatusEmoji: "",
     defaultStatusText: "Away from the forge",
     dotClass: "bg-[#6f6a80]",
   },
@@ -41,7 +41,7 @@ export const PRESENCE_CONFIG: Record<PresenceStatus, PresenceConfig> = {
 
 export const PRESENCE_STATUSES = Object.keys(PRESENCE_CONFIG) as PresenceStatus[];
 
-export const STATUS_ICON_OPTIONS = ["🗺️", "✍️", "⚒️", "📜", "🔮", "🛡️", "🕯️", "💤", "🔥", "⚡"];
+export const STATUS_ICON_OPTIONS = ["[Active]", "[Writing]", "[Crafting]", "[Scroll]", "[Focus]", "[Shield]", "[Light]", "[Rest]", "[Alert]", "[Energy]"];
 
 function isPresenceStatus(presence: unknown): presence is PresenceStatus {
   return typeof presence === "string" && presence in PRESENCE_CONFIG;
@@ -203,5 +203,5 @@ export function normalizeCustomStatus(presence?: Pick<Presence, "status" | "stat
 export function formatCustomStatus(presence?: Pick<Presence, "status" | "statusByPresence" | "custom_status">) {
   const currentPresence = presence?.status ?? "offline";
   const status = getStatusForPresence(presence, currentPresence);
-  return `${status.emoji} ${status.text}`;
+  return status.emoji ? `${status.emoji} ${status.text}` : status.text;
 }

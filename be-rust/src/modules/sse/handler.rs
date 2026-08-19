@@ -8,7 +8,7 @@ use axum::{
     },
 };
 use axum_extra::extract::CookieJar;
-use futures::{Stream, StreamExt};
+use futures::Stream;
 use tokio::sync::mpsc;
 use uuid::Uuid;
 
@@ -40,45 +40,45 @@ fn build_sse_response(
     user_id: Uuid,
     stream: SseStream,
 ) -> Sse<impl Stream<Item = Result<Event, Infallible>>> {
-    let connected_event = Event::default()
-        .event("connected")
-        .data(serde_json::json!({ "user_id": user_id }).to_string());
+    let sse_stream = futures::stream::unfold(
+        SseConnectionState {
+            state,
+            user_id,
+            stream,
+            conn_id: None,
+            rx: None,
+            sent_connected: false,
+        },
+        |mut conn| async move {
+            if conn.rx.is_none() {
+                let (conn_id, rx) = conn.state.sse_hub.register().await;
+                conn.state
+                    .sse_hub
+                    .subscribe_user(conn_id, conn.user_id, conn.stream)
+                    .await;
+                conn.conn_id = Some(conn_id);
+                conn.rx = Some(rx);
+            }
 
-    let sse_stream = futures::stream::once(async move { Ok(connected_event) }).chain(
-        futures::stream::unfold(
-            SseConnectionState {
-                state,
-                user_id,
-                stream,
-                conn_id: None,
-                rx: None,
-            },
-            |mut conn| async move {
-                if conn.rx.is_none() {
-                    let (conn_id, rx) = conn.state.sse_hub.register().await;
-                    conn.state
-                        .sse_hub
-                        .subscribe_user(conn_id, conn.user_id, conn.stream)
-                        .await;
-                    conn.conn_id = Some(conn_id);
-                    conn.rx = Some(rx);
-                }
+            if !conn.sent_connected {
+                conn.sent_connected = true;
+                let connected_event = Event::default()
+                    .event("connected")
+                    .data(serde_json::json!({ "user_id": conn.user_id }).to_string());
+                return Some((Ok(connected_event), conn));
+            }
 
-                let rx = conn.rx.as_mut()?;
-                match rx.recv().await {
-                    Some(payload) => Some((
-                        Ok(Event::default().data(payload)),
-                        conn,
-                    )),
-                    None => {
-                        if let Some(conn_id) = conn.conn_id {
-                            conn.state.sse_hub.unregister(conn_id).await;
-                        }
-                        None
+            let rx = conn.rx.as_mut()?;
+            match rx.recv().await {
+                Some(payload) => Some((Ok(Event::default().data(payload)), conn)),
+                None => {
+                    if let Some(conn_id) = conn.conn_id {
+                        conn.state.sse_hub.unregister(conn_id).await;
                     }
+                    None
                 }
-            },
-        ),
+            }
+        },
     );
 
     Sse::new(sse_stream).keep_alive(
@@ -94,6 +94,7 @@ struct SseConnectionState {
     stream: SseStream,
     conn_id: Option<Uuid>,
     rx: Option<mpsc::Receiver<String>>,
+    sent_connected: bool,
 }
 
 #[cfg(test)]

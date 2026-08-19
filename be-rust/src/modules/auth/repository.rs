@@ -24,7 +24,7 @@ pub struct AuthRepositoryImpl {
 #[async_trait]
 impl AuthRepository for AuthRepositoryImpl {
     async fn find_by_username(&self, username: &str) -> AppResult<Option<Adventurer>> {
-        debug!("Repo : {}", username);
+        debug!("Finding adventurer by username: {}", username);
         Ok(
             sqlx::query_as::<_, Adventurer>("select * from adventurers where username = $1")
                 .bind(username)
@@ -34,7 +34,7 @@ impl AuthRepository for AuthRepositoryImpl {
     }
 
     async fn find_by_email(&self, email: &str) -> AppResult<Option<Adventurer>> {
-        debug!("Repo : {}", email);
+        debug!("Finding adventurer by email: {}", email);
         Ok(
             sqlx::query_as::<_, Adventurer>("select * from adventurers where email = $1")
                 .bind(email)
@@ -50,7 +50,7 @@ impl AuthRepository for AuthRepositoryImpl {
             .bind(user.password)
             .execute(self.state.db.as_ref())
             .await?;
-        debug!("saved");
+        debug!("Adventurer saved successfully");
         Ok(())
     }
 
@@ -59,7 +59,7 @@ impl AuthRepository for AuthRepositoryImpl {
 
         let _: () = conn.set_ex(format!("otp:{}", email), otp, 60).await?;
 
-        debug!("saved otp");
+        debug!("OTP saved in cache");
         Ok(())
     }
 

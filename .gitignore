@@ -1,0 +1,40 @@
+# Rust / Cargo
+target/
+**/target/
+**/*.rs.bk
+
+# Node / Vite / Frontend
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+build/
+**/build/
+.vite/
+**/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment & Local Configuration
+.env
+.env.*
+!.env.example
+config/config.yaml
+be-rust/config/config.yaml
+
+# Uploads & Storage
+uploads/
+**/uploads/
+public/user/
+**/public/user/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db

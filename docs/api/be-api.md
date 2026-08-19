@@ -4,7 +4,7 @@ Welcome to the unified RuneTalk Backend API documentation. This document covers 
 
 ---
 
-## 📖 Table of Contents
+## Table of Contents
 1. [Global Requirements & Conventions](#global-requirements--conventions)
 2. [Authentication & Session API](#authentication--session-api)
 3. [User & Friendship API](#user--friendship-api)

@@ -1,23 +1,24 @@
-# 🗡️ RuneTalk
+# RuneTalk
 
-A fantasy-themed real-time chat platform — think Discord, but in a world of guilds, adventurers, and ancient runes.
+A fantasy-themed real-time chat platform with guilds, adventurers, channels, and direct messaging.
 
-## 🖼️ UI Preview
+## UI Preview
 
 ![RuneTalk UI](./docs/screenshots/runetalk-fe.png)
 
-## ✨ Features
+## Features
 
-- **Authentication** — Register & login with JWT, OTP verification via email (SMTP)
-- **Guilds** — Create and manage servers with roles (owner, admin, member)
-- **Rifts** — Text channels inside guilds with topic and ordering
+- **Authentication** — Register and login with JWT, OTP verification via SMTP email
+- **Guilds** — Create and manage guilds with roles (owner, admin, member)
+- **Rifts** — Text and voice channels inside guilds with topic and ordering
 - **Echoes** — Real-time messages in rifts with reply support
-- **Scrolls & Whispers** — Private DM conversations between adventurers
-- **Presence** — Online/offline/idle/dnd status with custom status
-- **Real-time** — WebSocket for live messaging, SSE for event streaming
-- **Frontend UI** — React + Tailwind mock-data interface for auth, guild chat, DMs, allies, modals, replies, pinned echoes, and presence states
+- **Scrolls & Whispers** — Private direct messaging conversations between adventurers
+- **Presence** — Online, offline, idle, and do-not-disturb status tracking
+- **Real-time** — WebSocket for interactive messaging, Server-Sent Events (SSE) for event streaming
+- **GraphQL** — Query guild hierarchies, channel structures, and member lists
+- **Frontend UI** — React and Tailwind interface for guilds, channels, DMs, allies, modals, and presence states
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -28,58 +29,54 @@ A fantasy-themed real-time chat platform — think Discord, but in a world of gu
 | Cache / Session | Redis |
 | ORM / Migrations | SQLx 0.9 |
 | Auth | JWT + Argon2 + OTP |
-| Email | SMTP |
+| Email | SMTP (Lettre) |
 | Real-time | WebSocket + SSE |
-| API | REST + GraphQL |
+| API | REST + GraphQL (Async-GraphQL) |
 | Validation | validator |
 | Logging | tracing + tracing-subscriber |
 
-## 🗃️ Database Schema
+## Database Schema
 
 | Table | Description |
 |---|---|
 | `adventurers` | User accounts |
-| `guilds` | Servers / communities |
-| `guild_members` | Server membership & roles |
+| `guilds` | Servers and communities |
+| `guild_members` | Server membership and roles |
 | `rifts` | Text channels inside guilds |
 | `echoes` | Messages inside rifts |
-| `scrolls` | DM conversations between two adventurers |
-| `whispers` | Messages inside a scroll (DM) |
+| `scrolls` | Direct message conversations between two adventurers |
+| `whispers` | Messages inside a scroll (direct message) |
 | `presence` | Online status per adventurer |
+| `allies` | Friend relationships |
+| `pledges` | Friend requests and status |
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
-- Rust (latest stable)
+- Rust (1.75+ or stable)
 - PostgreSQL 16
 - Redis
-- SQLx CLI
+- SQLx CLI (optional, for manual migration management)
 
 ```bash
 cargo install sqlx-cli --no-default-features --features rustls,postgres
 ```
 
-### Setup
+### Backend Setup
 
 ```bash
-# Clone the repo
+# Clone the repository
 git clone https://github.com/yourusername/RuneTalk.git
-cd RuneTalk
+cd RuneTalk/be-rust
 
-# Set environment variables
-export DATABASE_URL=postgres://user:password@localhost:5432/runetalk
-export REDIS_URL=redis://localhost:6379
-export JWT_SECRET=your_secret_here
-export SMTP_HOST=smtp.example.com
-export SMTP_USER=your@email.com
-export SMTP_PASSWORD=your_password
+# Create configuration from example
+cp config/config.example.yaml config/config.yaml
 
-# Run migrations
-sqlx database create
-sqlx migrate run
+# Run tests
+cargo test
 
-# Run the server
+# Run the backend server
 cargo run
 ```
 
@@ -91,19 +88,12 @@ npm install
 npm run dev
 ```
 
-The frontend currently uses schema-shaped mock data in `frontend/src/app/data/mock.ts`, so it can run before the backend API is fully wired.
+The frontend uses schema-shaped mock data in `frontend/src/app/data/mock.ts` and can run independently for interface testing.
 
-### Docker (Database)
-    
-```bash
-cd docker/postgresql
-docker compose up -d
-```
+## Documentation
 
-## 📖 Documentation
+API documentation is available at [docs/api/be-api.md](docs/api/be-api.md). It covers authentication, user and friendship management, guilds and rifts, WebSockets, Server-Sent Events (SSE), and GraphQL interfaces.
 
-API docs are available at [docs/api/be-api.md](docs/api/be-api.md). It covers authentication, user/friendship management, guilds & rifts, WebSockets, Server-Sent Events (SSE), and GraphQL interfaces.
-
-## 📜 License
+## License
 
 MIT

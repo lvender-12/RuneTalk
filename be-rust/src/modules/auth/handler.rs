@@ -18,8 +18,7 @@ pub async fn register_handler(
     Json(payload): Json<RegisterDto>,
 ) -> AppResult<impl IntoResponse> {
     payload.validate()?;
-
-    debug!("payload : {:?}", payload);
+    debug!("Register request for username: {}", payload.username);
 
     let _ = state.auth_service.register_service(payload).await?;
 
@@ -38,8 +37,7 @@ pub async fn check_otp(
     Json(payload): Json<VerifyOtpDto>,
 ) -> AppResult<impl IntoResponse> {
     payload.validate()?;
-
-    debug!("payload : {:?}", payload);
+    debug!("Verifying OTP for: {}", payload.email);
 
     let _ = state.auth_service.verification_otp(payload).await?;
 
@@ -58,8 +56,7 @@ pub async fn resend_otp(
     Json(payload): Json<ResendOtpDto>,
 ) -> AppResult<impl IntoResponse> {
     payload.validate()?;
-
-    debug!("payload : {:?}", payload);
+    debug!("Resending OTP for: {}", payload.email);
 
     let _ = state
         .auth_service
@@ -82,8 +79,7 @@ pub async fn login_handler(
     Json(payload): Json<LoginDto>,
 ) -> AppResult<impl IntoResponse> {
     payload.validate()?;
-
-    debug!("payload : {:?}", payload);
+    debug!("Login request for identifier: {}", payload.identifier);
 
     let token = state.auth_service.login_service(payload).await?;
 

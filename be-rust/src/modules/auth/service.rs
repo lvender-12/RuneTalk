@@ -40,7 +40,7 @@ impl AuthServiceImpl {
 #[async_trait]
 impl AuthService for AuthServiceImpl {
     async fn register_service(&self, dto: RegisterDto) -> AppResult<ApiResponse> {
-        debug!("Service : {:?}", dto);
+        debug!("Registering adventurer: {}", dto.username);
 
         let email_user = self.repo.find_by_email(&dto.email).await?;
         if let Some(user) = email_user {
@@ -58,8 +58,6 @@ impl AuthService for AuthServiceImpl {
         }
 
         let hash = hash_password(&dto.password)?;
-        debug!(hash);
-
         let to_email = dto.email.clone();
 
         let user = RegisterDto {
@@ -67,8 +65,6 @@ impl AuthService for AuthServiceImpl {
             email: dto.email,
             password: hash,
         };
-
-        debug!("{:?}", user);
 
         self.repo.save_adventurer(user).await?;
 
@@ -108,7 +104,7 @@ impl AuthService for AuthServiceImpl {
             .login(&dto.identifier)
             .await?
             .ok_or(AuthError::NotFound)?;
-        debug!("{:?}", user);
+        debug!("Processing login for adventurer: {}", user.username);
 
         if !user.is_verified {
             return Err(AuthError::NotVerified(user.email).into());
@@ -119,12 +115,12 @@ impl AuthService for AuthServiceImpl {
         }
 
         let token = generate_jwt(
-            user.id.clone().to_string(),
+            user.id.to_string(),
             user.email.clone(),
             &self.config,
         )?;
 
-        debug!("token: {}", token);
+        debug!("JWT token generated successfully");
 
         Ok(token)
     }

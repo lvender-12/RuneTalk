@@ -23,3 +23,5 @@ smtp:
   password: password app
 allowed_origins:
   - "http://localhost:3000"
+storage:
+  path: "./public/user"

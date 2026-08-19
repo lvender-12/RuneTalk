@@ -5,7 +5,6 @@ use axum::{
 };
 use axum_extra::extract::CookieJar;
 use http::StatusCode;
-use tracing::debug;
 use uuid::Uuid;
 
 use crate::{
@@ -20,10 +19,7 @@ pub async fn edit_user(
     jar: CookieJar,
     multipart: Multipart,
 ) -> AppResult<impl IntoResponse> {
-    debug!("{:?}", multipart);
     let uuid = current_user_id(&jar, &state).await?;
-
-    debug!("{}", uuid);
     let user = state
         .user_service
         .edit_user_service(&state, multipart, uuid)

@@ -14,7 +14,7 @@ pub enum AuthError {
     #[error("forbidden")]
     Forbidden,
 
-    #[error("Not Found")]
+    #[error("not found")]
     NotFound,
 
     #[error("otp invalid or expired")]

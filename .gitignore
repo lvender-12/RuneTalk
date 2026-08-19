@@ -38,3 +38,7 @@ public/user/
 *~
 .DS_Store
 Thumbs.db
+
+# Agent & Skills
+.agent/
+agent/
